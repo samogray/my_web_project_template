@@ -11,32 +11,38 @@ module.exports = function(grunt) {
                     style: 'expanded'
                 },
                 files: {                         // Dictionary of files
-                    'css/main.css': 'css/sass/style.scss'       // 'destination': 'source'
+                    'src/css/style.css': 'src/sass/sass.scss'       // 'destination': 'source'
                 }
             }
         },
-        cssmin: {
+        postcss: {
+            options: {
+                processors: [
+                    require('autoprefixer')({browsers: ['last 2 version']}),
+                    require('cssnext')(),
+                    require('precss')(),
+                    require('postcss-normalize')()
+                    /*require('cssnano')()*/
 
-            target:{
-                files: {
-                    'css/min_css/style.min.css': ['css/reset.css', 'css/normalize.css','css/fonts.css','css/main.css','css/media.css']
-                }
+                ],
+                syntax: require('postcss-scss')
+            },
+            dist: {
+                src: 'src/css/style.css',
+                dest: 'dest/css/main.css'
             }
         },
         watch: {
-            styles:{
-                files:['css/sass/*.scss','css/sass/modules/*.scss','css/*.css'],
-                tasks: ['sass','cssmin'],
+            styles: {
+                files: ['src/sass/*.scss'],
+                tasks: ['sass','postcss'],
                 options: {
                     spawn: false,
-                    event:'all'
+                    event: 'all'
 
-                },
-                options: {
-                    livereload: true
                 }
-            }
 
+            }
         }
     });
 
@@ -50,8 +56,9 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-csscomb');// красивенький цсс*/
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-contrib-sass');//SASS
-    grunt.loadNpmTasks('grunt-contrib-cssmin');
+   // grunt.loadNpmTasks('grunt-contrib-cssmin');
+    grunt.loadNpmTasks('grunt-postcss');//POSTCSS
 
-    grunt.registerTask('default', ['sass','cssmin','watch']);
+    grunt.registerTask('default', ['sass','postcss','watch']);
 
 };
